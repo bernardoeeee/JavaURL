@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,14 +15,10 @@ import lombok.Setter;
 @Table(name = "url")
 public class Url {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
-    @Column(name = "urlDefault", length = 2082)
     private String urlDefault;
 
-    @Column(name = "urlEncurtada", length = 2082)
-    private String urlEncurtada;
-
+    private String urlShort;
 }

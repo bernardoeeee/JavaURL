@@ -1,24 +1,32 @@
 package com.bvf.JavaURL.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import java.time.Instant;
 import java.util.UUID;
 
+@Entity
+@Table(name = "url")
 @Getter
 @Setter
-@AllArgsConstructor
-@Entity
 @NoArgsConstructor
-@Table(name = "url")
 public class Url {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "url_default", nullable = false, length = 2082)
     private String urlDefault;
 
+    @Column(name = "url_short", nullable = false, unique = true, length = 50)
     private String urlShort;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @PrePersist
+    void prePersist() {
+        this.createdAt = Instant.now();
+    }
 }

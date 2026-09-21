@@ -15,13 +15,26 @@ public class JavaUrlService {
 
     private final UrlRepository urlRepository;
 
+    private String base62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    private Url urlCodigoUrl(String urlDefault) {
+        String codigo = urlDefault.substring(urlDefault.lastIndexOf("/") + 1);
+        codigo = codigo.split("\\?")[0];
+        return urlRepository.findByUrlShort(codigo).orElse(null);
+    }
+
+    private String generateShortUrl() {
+        long randomValue = (long) (Math.random() * Long.MAX_VALUE);
+        return urlCodigoUrl(randomValue);
+    }
+
     @Transactional
-    public Url encurtar(String urlDefault) {
+    public Url encurtar(String urlDefault, String urlShort) {
         return urlRepository.findByUrlDefault(urlDefault)
                 .orElseGet(() -> {
                     Url url = new Url();
                     url.setUrlDefault(urlDefault);
-//                    url.setUrlShort(gerarCodigoUnico());
+                    url.setUrlShort(generateShortUrl());
                     return urlRepository.save(url);
                 });
     }

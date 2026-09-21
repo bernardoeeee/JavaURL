@@ -12,22 +12,22 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-//@RestController -> @Controller, @RespondeBody
+// @RestController -> @Controller, @RespondeBody
 @RequestMapping("/javaUrl")
 public class JavaUrlController {
 
     @Autowired
-//    @Autowired nao precisa criar contrutores
+    // @Autowired nao precisa criar contrutores
     private JavaUrlService javaUrlService;
 
     @GetMapping
-    public String  index() {
+    public String index() {
         return "asdasd";
     }
 
     @PostMapping
     public ResponseEntity<Url> criarUrl(@Valid @RequestBody Url body) {
-        Url salva = javaUrlService.encurtar(body.getUrlDefault());
+        Url salva = javaUrlService.encurtar(body.getUrlDefault(), body.getUrlShort());
         return ResponseEntity.status(HttpStatus.CREATED).body(salva);
     }
 

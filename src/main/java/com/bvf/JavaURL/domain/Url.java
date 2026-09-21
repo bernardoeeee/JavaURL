@@ -19,7 +19,7 @@ public class Url {
     @Column(name = "url_default", nullable = false, length = 2082)
     private String urlDefault;
 
-    @Column(name = "url_short", nullable = false, unique = true, length = 50)
+    @Column(name = "url_short", nullable = true, unique = true, length = 50)
     private String urlShort;
 
     @Column(name = "created_at", nullable = false, updatable = false)

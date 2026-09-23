@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,11 +28,25 @@ public class JavaUrlController {
 
     @PostMapping
     public ResponseEntity<Url> criarUrl(@Valid @RequestBody Url body) {
-        Url salva = javaUrlService.encurtar(body.getUrlDefault(), body.getUrlShort());
+        Url salva = javaUrlService.encurtar(body.getUrlDefault());
         return ResponseEntity.status(HttpStatus.CREATED).body(salva);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{codigo}")
+    public ResponseEntity<Void> redirecionar(@PathVariable String codigo) {
+        Optional<Url> buscar = javaUrlService.getByCodigo(codigo);
+
+        if (buscar.isPresent()) {
+            String destino = buscar.get().getUrlDefault();
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(destino))
+                    .build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/id/{id}")
     public ResponseEntity<Url> getUrl(@PathVariable UUID id) {
         Optional<Url> buscar = javaUrlService.getUrl(id);
 

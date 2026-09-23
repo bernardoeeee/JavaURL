@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,21 +16,34 @@ public class JavaUrlService {
 
     private final UrlRepository urlRepository;
 
-    private String base62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final int TAMANHO_CODIGO = 7;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    private Url urlCodigoUrl(String urlDefault) {
-        String codigo = urlDefault.substring(urlDefault.lastIndexOf("/") + 1);
-        codigo = codigo.split("\\?")[0];
-        return urlRepository.findByUrlShort(codigo).orElse(null);
+    private String gerarCodigoAleatorio() {
+        StringBuilder codigo = new StringBuilder();
+
+        for (int i = 0; i < TAMANHO_CODIGO; i++) {
+            int posicao = RANDOM.nextInt(BASE62.length());
+            char letra = BASE62.charAt(posicao);
+            codigo.append(letra);
+        }
+
+        return codigo.toString();
     }
 
     private String generateShortUrl() {
-        long randomValue = (long) (Math.random() * Long.MAX_VALUE);
-        return urlCodigoUrl(randomValue);
+        String codigo;
+
+        do {
+            codigo = gerarCodigoAleatorio();
+        } while (urlRepository.findByUrlShort(codigo).isPresent());
+
+        return codigo;
     }
 
     @Transactional
-    public Url encurtar(String urlDefault, String urlShort) {
+    public Url encurtar(String urlDefault) {
         return urlRepository.findByUrlDefault(urlDefault)
                 .orElseGet(() -> {
                     Url url = new Url();
